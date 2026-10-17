@@ -3,13 +3,15 @@ import random
 
 PARENT_DIR = Path(__file__).resolve().parent.parent.parent
 
-IMAGE_DIR = PARENT_DIR / "data/downloaded_bird_photos"
+IMAGE_DIR = PARENT_DIR / "data/resized_images"
 
 def class_to_idx(directory):
     bird_dirs = sorted(d for d in directory.iterdir() if d.is_dir())
 
     selector = {}
     for index, bird_dir in enumerate(bird_dirs):
+        if len(list(bird_dir.glob("*.jpg"))) == 0:
+            print(bird_dir.name)
         selector[bird_dir.name] = index
 
     return selector
