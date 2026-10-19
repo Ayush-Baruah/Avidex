@@ -6,6 +6,10 @@ from datasetClass import *
 from pathlib import Path
 from PIL import Image, ImageFile
 
+# Anchor to this file's own directory, so these paths work no matter
+# where the process that imports this module was launched from.
+MODEL_DIR = Path(__file__).resolve().parent.parent
+
 val_samples, train_samples = split_dataset(IMAGE_DIR, class_to_idx(IMAGE_DIR))
 
 mean, std =[0.485, 0.456, 0.406],[0.229, 0.224, 0.225]

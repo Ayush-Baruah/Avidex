@@ -7,6 +7,9 @@ from flask import Flask, render_template, request, redirect, jsonify
 import database.db_connector as db
 from flask_cors import CORS
 import os
+from scripts.identifier.identify_one_img import classify_image, classify_image_from_url
+
+from PIL import Image
 import subprocess
 
 PORT = 8001
@@ -61,6 +64,44 @@ def api_birds():
 
     finally:
         if "dbConnection" in locals() and dbConnection: dbConnection.close()
+
+# Call to identify uploaded bird.
+@app.route("/api/identify", methods=["POST"])
+def identify_bird():
+    try:
+        img = None
+
+        # Case 1: a file was uploaded. request.files["image"] only exists
+        # if the frontend's <input name="image"> actually has a file
+        # selected -- an empty file input still shows up with an empty
+        # filename, so check that too.
+        if "image" in request.files and request.files["image"].filename != "":
+            uploaded_file = request.files["image"]
+            img = Image.open(uploaded_file.stream)
+
+        # Case 2: no file, so check for a URL field instead. This comes
+        # through request.form since it's a regular text field, not a file.
+        elif request.form.get("image_url"):
+            image_url = request.form.get("image_url")
+            # classify_image_from_url already does the fetch+open itself,
+            # so we don't duplicate that logic here -- just call it
+            # directly and skip the shared classify_image() call below.
+            top_class, all_predictions = classify_image_from_url(image_url, top_k=5)
+            results = [{"name": name, "confidence": confidence} for name, confidence in all_predictions]
+            return jsonify({"results": results})
+
+        # Neither a file nor a URL was provided.
+        if img is None:
+            return jsonify({"error": "No image file or image URL provided"}), 400
+
+        top_class, all_predictions = classify_image(img, top_k=5)
+        results = [{"name": name, "confidence": confidence} for name, confidence in all_predictions]
+
+        return jsonify({"results": results})
+
+    except Exception as e:
+        print(f"Error running identification: {e}")
+        return jsonify({"error": "An error occurred while identifying the bird."}), 500
 
 ############################################
 ########### ROUTE HANDLERSS ###########
