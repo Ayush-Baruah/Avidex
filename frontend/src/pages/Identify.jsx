@@ -53,7 +53,7 @@ export default function Identify() {
         }
 
         try {
-            const response = await fetch("http://localhost:8001/api/identify", {
+            const response = await fetch("/api/identify", {
                 method: "POST",
                 body: formData,
                 // No Content-Type header here -- the browser sets the

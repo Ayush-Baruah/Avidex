@@ -1870,3 +1870,20 @@ BEGIN
     COMMIT;
 END //
 DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE pl_get_bird_by_common_name(IN p_commonName VARCHAR(500))
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM `Birds`
+        WHERE `commonName` = p_commonName
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = "That bird doesn't exist";
+    END IF;
+
+    SELECT birdID, commonName, species, description
+    FROM Birds
+    WHERE commonName = p_commonName;
+END //
+DELIMITER //
