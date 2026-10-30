@@ -6,7 +6,10 @@
   --nav-bg-color: #b9a36c;
   --hr-color: #000000;
   --a-color:#0073d8;
+  --current-page: #303030;
+  --error-color: #b00020;
 }
+
 
 /* Dark theme overrides -- applied when <html data-theme="dark"> is set */
 [data-theme="dark"] {
@@ -16,6 +19,8 @@
   --nav-bg-color: #000000;
   --hr-color: #FFFFFF;
   --a-color: #d5d800;
+  --current-page: #a9a9a9;
+  --error-color: #ff6b6b;
 }
 
 html, body {
@@ -36,6 +41,10 @@ html, body {
   justify-content: left;
 }
 
+.nav-bar-item.current-page {
+  color: var(--current-page)
+}
+
 .nav-bar {
   margin-left: auto;
   margin-top: auto;
@@ -48,21 +57,47 @@ html, body {
 .nav-bar-item {
   text-align: right;
   font-size: 35px;
+  font-weight: bold;
 
   margin-top: 0;
   margin-bottom: .2cm;
   margin-right: .8cm;
   color: var(--text-color);
+
+  /* Makes it read as clickable even though these are <h3> elements,
+     not <a> tags -- the browser only shows a pointer cursor and
+     underline-on-hover automatically for real links by default. */
+  cursor: pointer;
+  text-decoration: none;
+  transition: text-decoration 0.15s ease;
+}
+
+.nav-bar-item:hover {
+  text-decoration: underline;
+}
+
+/* Dimmed and non-interactive, so they don't promise a click that does nothing */
+.nav-bar-item-disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.nav-bar-item-disabled:hover {
+  text-decoration: none;
 }
 
 .title {
   text-align: left;
   font-size: 96px;
+  font-weight: bold;
 
   margin-top: 0;
   margin-bottom: 0;
   margin-left: 1cm;
   color: var(--text-color);
+
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .opening-title-div {
@@ -247,36 +282,144 @@ a {
 /*
 -------------- ------------------------------ Identify Page CSS ------------------------------ --------------
 */
+
+/* Gives the whole page the same generous side margins as the rest of
+   the site, and caps its width so the form/results don't stretch
+   edge-to-edge on a wide screen. */
+.identify-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+
 .identify-title {
   display: flex;
   justify-content: center;
   align-items: center;
+  font-size: 48px;
+  margin-top: 0.5in;
+  margin-bottom: 0.25in;
 }
 
 .image-form {
-  display: grid;
-  grid-template-columns: 1;
-  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .form-row, .form-divider {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
   margin-bottom: 0.25in;
+  font-size: 20px;
 }
 
+.form-divider {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+/* Matches .search-bar's sizing language so the URL field doesn't look
+   like a different component living on the same page. */
+#image_url {
+  font-size: 20px;
+  padding: 8px 12px;
+  min-width: 280px;
+  border: 2px solid var(--card-border-color);
+  border-radius: 5%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+#image_file {
+  font-size: 18px;
+  color: var(--text-color);
+}
+
+/* Reuses the same border + radius language as .bird-image so the
+   preview reads as part of the same visual system as a bird card's
+   photo, not a bare <img> dropped onto the page. */
 .identify-preview {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 50%;
-  margin: 0.5in 25%;
+  max-width: 350px;
+  max-height: 350px;
+  margin: 0.25in auto;
+  border: 2px solid var(--card-border-color);
+  border-radius: 10%;
+  object-fit: cover;
 }
 
+/* Styled like a small pill button rather than a bare browser default,
+   with a hover state that borrows the nav bar's accent color. */
 .form-submit {
-  margin-top: 0.5in;
-  font-size: larger;
-  max-width: 180px;
-  justify-self: center;
+  margin-top: 0.25in;
+  padding: 10px 28px;
+  font-size: 20px;
+  font-weight: 600;
+  max-width: 220px;
+
+  border: 2px solid var(--card-border-color);
+  border-radius: 5%;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.form-submit:hover:not(:disabled) {
+  background-color: var(--nav-bg-color);
+}
+
+.form-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.identify-error {
+  text-align: center;
+  color: var(--error-color);
+  font-weight: 600;
+  margin-top: 0.15in;
+}
+
+/* A single card, same visual language as .bird-card (solid border,
+   5% radius, centered column), holding the top-5 results list. */
+.identify-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin: 0.5in auto 1in;
+  padding: 20px 10px;
+  max-width: 500px;
+
+  border: 1px solid var(--card-border-color);
+  border-radius: 5%;
+}
+
+.identify-results h2 {
+  margin-top: 0;
+  font-size: 28px;
+}
+
+.identify-results ol {
+  width: 85%;
+  padding-left: 1.4em;
+}
+
+.identify-results li {
+  font-size: 20px;
+  padding: 8px 0;
+  /* Same dashed-divider feel as .bird-hr, but per-row instead of a
+     single <hr>, since this is a list rather than a single card. */
+  border-bottom: 1px dashed var(--hr-color);
+}
+
+.identify-results li:last-child {
+  border-bottom: none;
 }

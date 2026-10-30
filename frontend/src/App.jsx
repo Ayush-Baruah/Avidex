@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
-import NavBar from '../src/components/NavBar.jsx'
+import { Routes, Route, Link, useNavigate, NavLink } from 'react-router-dom'
 import Identify from './pages/Identify.jsx'
 import Home from './pages/Home.jsx'
 import Compendium from './pages/Compendium.jsx'
@@ -12,7 +11,8 @@ function App() {
   const [signedIn, setSignedIn] = useState(false)
 
   // Reads any previously saved preference on first load, defaulting to
-  // "light" if this is the user's first visit
+  // "light" if this is the user's first visit. Passing a function to
+  // useState means localStorage is only read once, not on every render.
   const [theme, setTheme] = useState(
     () => localStorage.getItem('theme') || 'light'
   )
@@ -39,14 +39,13 @@ function App() {
   return (
     <>
       <div className='top-bar'>
-        <h1 className='title' onClick={() => handleNavClick("/")}>Avidex</h1>
+        <Link className="title" to="/">Avidex</Link>
         <nav className='nav-bar'>
-          <h3 className='nav-bar-item' onClick={() => handleNavClick("/Identify")}>Identify</h3>
-          <h3 className='nav-bar-item' onClick={() => handleNavClick("/Compendium")}>Compendium</h3>
-          <h3 className='nav-bar-item'>Map</h3>
-          <h3 className='nav-bar-item'>Badges</h3>
-          <h3 className='nav-bar-item'>Avidex</h3>
-          <button className='nav-bar-item'onClick={toggleTheme}>{theme === 'light' ? '🌙' : '☀️'}</button>
+          <NavLink className={({ isActive }) => isActive ? "nav-bar-item current-page" : "nav-bar-item"} to="/Identify">Identify</NavLink>
+          <NavLink className={({ isActive }) => isActive ? "nav-bar-item current-page" : "nav-bar-item"} to="/Compendium">Compendium</NavLink>
+          <NavLink className={({ isActive }) => isActive ? "nav-bar-item current-page" : "nav-bar-item nav-bar-item-dsiabled" } >Map</NavLink>
+          <NavLink className={({ isActive }) => isActive ? "nav-bar-item current-page" : "nav-bar-item nav-bar-item-dsiabled"} >Badges</NavLink>
+          <button className='nav-bar-item'onClick={toggleTheme}>{theme === 'light' ? '🌑' : '🌕'}</button>
         </nav>
       </div>
 
