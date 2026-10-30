@@ -60,10 +60,16 @@ export default function Identify() {
                 // correct multipart boundary automatically for FormData.
             })
 
-            const data = await response.json()
+            const data = await response.json().catch(() => ({}))
 
             if (!response.ok) {
-                setError(data.error || "Something went wrong.")
+                 // 413 = "payload too large", which nginx returns when an upload exceeds
+                // client_max_body_size. Give that case a specific, helpful message.
+                if (response.status === 413) {
+                    setError("That image is too large. Try a smaller one.")
+                } else {
+                    setError(data.error || "Something went wrong.")
+                }
             } else {
                 setResults(data.results)
             }

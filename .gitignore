@@ -11,6 +11,7 @@ node_modules/
 
 # Data
 data/
+Avidex.sql
 
 # Logs
 logs

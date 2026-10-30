@@ -9,7 +9,7 @@ const client = new Typesense.Client({
     protocol: window.location.protocol.slice(0, -1),
     path: '/typesense',
   }],
-  apiKey: 'xyz', // matches TYPESENSE_SEARCH_ONLY_API_KEY in .env
+  apiKey: import.meta.env.VITE_TYPESENSE_SEARCH_KEY, // matches TYPESENSE_SEARCH_ONLY_API_KEY in .env
   connectionTimeoutSeconds: 2,
 });
 

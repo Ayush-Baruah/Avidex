@@ -1,6 +1,6 @@
 import torch
 import json
-from PIL import Image
+from PIL import Image, ImageOps
 from pathlib import Path
 import torchvision.transforms as transforms
 import requests
@@ -34,11 +34,10 @@ val_trans = transforms.Compose([
 ])
 
 def classify_image(img, top_k=10):
-    """
-    Runs one PIL Image through the model and returns the top_k predictions.
-    This is the shared core — classify_image_from_url/_file/_upload all
-    just get an Image object however they need to, then call this.
-    """
+    # Apply the EXIF rotation tag (if any) so the pixels are upright, which
+    # matches how training images were prepared in image_resize.py.
+    # Without this, many phone photos reach the model rotated 90 degrees.
+    img = ImageOps.exif_transpose(img)
     img_tensor = val_trans(img.convert("RGB")).unsqueeze(0).to(device)
 
     with torch.no_grad():
