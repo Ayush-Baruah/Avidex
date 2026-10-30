@@ -34,7 +34,7 @@ export default function Compendium() {
 
     async function loadPage(pageNumber) {
         const offset = (pageNumber - 1) * PAGE_SIZE;
-        const response = await fetch(`http://localhost:8001/api/birds?limit = ${PAGE_SIZE}&offset=${offset}`);
+        const response = await fetch(`/api/birds?limit=${PAGE_SIZE}&offset=${offset}`);
         const data = await response.json();
 
         setBirds(data.birds);

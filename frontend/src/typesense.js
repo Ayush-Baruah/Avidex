@@ -4,9 +4,10 @@ import Typesense from 'typesense';
 // never write or delete, unlike the admin key used in index_birds.py
 const client = new Typesense.Client({
   nodes: [{
-    host: 'localhost',
-    port: 8108,
-    protocol: 'http',
+    host: window.location.hostname,
+    port: Number(window.location.port) || (window.location.protocol === 'https:' ? 443 : 80),
+    protocol: window.location.protocol.slice(0, -1),
+    path: '/typesense',
   }],
   apiKey: 'xyz', // matches TYPESENSE_SEARCH_ONLY_API_KEY in .env
   connectionTimeoutSeconds: 2,

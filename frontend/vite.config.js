@@ -10,7 +10,10 @@ export default defineConfig({
       // (port 5173) is forwarded to Flask on 8001. This is the dev-time
       // stand-in for the nginx rule we'll write on the server.
       '/api': 'http://localhost:8001',
+      '/typesense': {
+        target: 'http://localhost:8108',
+        rewrite: (path) => path.replace(/^\/typesense/, ''),
+      },
     },
   },
 })
-

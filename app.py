@@ -5,7 +5,6 @@
 from pathlib import Path
 from flask import Flask, render_template, request, redirect, jsonify
 import database.db_connector as db
-from flask_cors import CORS
 import os
 from scripts.identifier.identify_one_img import classify_image, classify_image_from_url
 
@@ -15,11 +14,6 @@ import subprocess
 PORT = 8001
 
 app = Flask(__name__)
-
-# Allows requests from the React dev server (Vite defaults to port 5173).
-# Without this, the browser blocks React's fetch() calls to Flask with a
-# CORS error, since they're on different origins (5173 vs 8001).
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 # JSON API version of the birds data, for the React compendium page.
 # Unlike avidex_birds() above, this returns raw data instead of rendering
